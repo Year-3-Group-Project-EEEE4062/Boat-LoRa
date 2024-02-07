@@ -1,3 +1,3 @@
 import rfReceiver
 
-rfReceiver.initiator()
+rfReceiver.responder()
