@@ -5,4 +5,3 @@ rf = boatRF()
 
 # Initiate RF listening
 rf.receiver()
-
