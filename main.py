@@ -1,3 +1,8 @@
-import rfReceiver
+from rfReceiver import boatRF
 
-rfReceiver.responder()
+# Create instance of RF class
+rf = boatRF()
+
+# Initiate RF listening
+rf.receiver()
+

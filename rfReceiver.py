@@ -18,50 +18,53 @@ _RX_POLL_DELAY = const(15)
 # initiator may be a slow device. Value tested with Pyboard, ESP32 and ESP8266.
 _RESPONDER_SEND_DELAY = const(10)
 
-# Set the pins for the RF module
-spi = SPI(0, sck=Pin(6), mosi=Pin(7), miso=Pin(4))
-cfg = {"spi": spi, "miso": 4, "mosi": 7, "sck": 6, "csn": 5, "ce": 8}
+class boatRF:
+    def __init__(self):
+        self.timeoutTime = 250
+        
+        # Set the pins for the RF module
+        self.spi = SPI(0, sck=Pin(6), mosi=Pin(7), miso=Pin(4))
+        self.cfg = {"spi": self.spi, "miso": 4, "mosi": 7, "sck": 6, "csn": 5, "ce": 8}
 
-# Addresses are in little-endian format. They correspond to big-endian
-# 0xf0f0f0f0e1, 0xf0f0f0f0d2
-pipes = (b"\xe1\xf0\xf0\xf0\xf0", b"\xd2\xf0\xf0\xf0\xf0")
+        # Addresses are in little-endian format. They correspond to big-endian
+        # 0xf0f0f0f0e1, 0xf0f0f0f0d2
+        self.pipes = (b"\xe1\xf0\xf0\xf0\xf0", b"\xd2\xf0\xf0\xf0\xf0")
 
-def responder():
-    csn = Pin(cfg["csn"], mode=Pin.OUT, value=1)
-    ce = Pin(cfg["ce"], mode=Pin.OUT, value=0)
-    spi = cfg["spi"]
-    nrf = NRF24L01(spi, csn, ce, payload_size=8)
+        self.csn = Pin(self.cfg["csn"], mode=Pin.OUT, value=1)
+        self.ce = Pin(self.cfg["ce"], mode=Pin.OUT, value=0)
+        self.spi = self.cfg["spi"]
+        self.nrf = NRF24L01(self.spi, self.csn, self.ce, payload_size=32)
 
-    nrf.open_tx_pipe(pipes[1])
-    nrf.open_rx_pipe(1, pipes[0])
-    nrf.start_listening()
+        self.nrf.open_tx_pipe(self.pipes[1])
+        self.nrf.open_rx_pipe(1, self.pipes[0])
 
-    print("NRF24L01 responder mode, waiting for packets... (ctrl-C to stop)")
+    def receiver(self):
+        self.nrf.start_listening()
+        print("NRF24L01 responder mode, waiting for packets...")
 
-    while True:
-        # Check if any data is received
-        if nrf.any():
-            # While data has been received
-            while nrf.any():
-                buf = nrf.recv()
-                mssg = buf.decode('utf-8')
-                print("received:", mssg)
-                utime.sleep_ms(_RX_POLL_DELAY)
+        while True:
+            # Check if any data is received
+            if self.nrf.any():
+                # While data has been received
+                while self.nrf.any():
+                    buf = self.nrf.recv()
+                    print("received:", buf)
+                    utime.sleep_ms(_RX_POLL_DELAY)
 
-            # Give initiator time to get into receive mode.
-            utime.sleep_ms(_RESPONDER_SEND_DELAY)
+                # Give initiator time to get into receive mode.
+                utime.sleep_ms(_RESPONDER_SEND_DELAY)
 
-            # Stop boat RF from listening
-            nrf.stop_listening()
+                # Stop boat RF from listening
+                self.nrf.stop_listening()
 
-            # Try replying to the message to the initiator
-            try:
-                pingMssg = "Got it!"
-                nrf.send(pingMssg.encode('utf-8'))
-                print("sent response: ", pingMssg)
+                # Try replying to the message to the initiator
+                try:
+                    pingMssg = "Got it!"
+                    self.nrf.send(pingMssg.encode('utf-8'))
+                    print("sent response: ", pingMssg)
 
-            except OSError:
-                pass
-            
-            # Start listening to RF messages again
-            nrf.start_listening()
+                except OSError:
+                    pass
+                
+                # Start listening to RF messages again
+                self.nrf.start_listening()
