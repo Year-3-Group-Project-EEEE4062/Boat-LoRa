@@ -20,8 +20,6 @@ _RESPONDER_SEND_DELAY = const(10)
 
 class boatRF:
     def __init__(self):
-        self.timeoutTime = 250
-        
         # Set the pins for the RF module
         self.spi = SPI(0, sck=Pin(6), mosi=Pin(7), miso=Pin(4))
         self.cfg = {"spi": self.spi, "miso": 4, "mosi": 7, "sck": 6, "csn": 5, "ce": 8}
@@ -48,7 +46,9 @@ class boatRF:
                 # While data has been received
                 while self.nrf.any():
                     buf = self.nrf.recv()
-                    print("received:", buf)
+
+                    # Decoding here
+
                     utime.sleep_ms(_RX_POLL_DELAY)
 
                 # Give initiator time to get into receive mode.
@@ -68,3 +68,56 @@ class boatRF:
                 
                 # Start listening to RF messages again
                 self.nrf.start_listening()
+
+    def nrfReceiverTest():
+        self.nrf.start_listening()
+        print("NRF24L01 responder mode, waiting for packets...")
+
+        while True:
+            # Check if any data is received
+            if self.nrf.any():
+                # While data has been received
+                while self.nrf.any():
+                    buf = self.nrf.recv()
+                    
+                    # Decode the message
+                    __extractData(buf)
+
+                    utime.sleep_ms(_RX_POLL_DELAY)
+
+                # Give initiator time to get into receive mode.
+                utime.sleep_ms(_RESPONDER_SEND_DELAY)
+
+                # Stop boat RF from listening
+                self.nrf.stop_listening()
+
+                # Try replying to the message to the initiator
+                try:
+                    pingMssg = "Got it!"
+                    self.nrf.send(pingMssg.encode('utf-8'))
+                    print("sent response: ", pingMssg)
+
+                except OSError:
+                    pass
+                
+                # Start listening to RF messages again
+                self.nrf.start_listening()
+
+    def __extractData(self, buf):
+        double_identifier = 0x01
+        integer_identifier = 0x02
+        
+        identifier = buf[0]
+        if identifier == double_identifier:
+            double_value = struct.unpack('d'* int((len(buf[1:])/8)), buf[1:])
+            print(double_value)
+        elif identifier == integer_identifier:
+            integer_value = struct.unpack('i'* int((len(buf[1:])/4)), buf[1:])
+            print(integer_value)
+        else:
+            raise ValueError("Unknown identifier")
+
+         
+
+
+
