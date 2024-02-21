@@ -22,6 +22,7 @@ class boatRF:
     def __init__(self):
         # Setup on board LED to let user know if message received or not
         self.led = Pin("LED", Pin.OUT)
+        self.counter = 0
 
         # Set the pins for the RF module
         self.spi = SPI(0, sck=Pin(6), mosi=Pin(7), miso=Pin(4))
@@ -52,7 +53,6 @@ class boatRF:
 
                     # Decoding here
                     print("received Message!!")
-                    # self.__extractData(buf)
                     
                     self.led.on()
 
@@ -89,11 +89,12 @@ class boatRF:
                 while self.nrf.any():
                     buf = self.nrf.recv()
 
-                    # Decoding here
-                    print("received Message!!")     
+                    # Decoding here     
                     print(buf)
                     pingMssg = str(self.__extractData(buf))
                     self.led.on()
+                    self.counter = self.counter + 1
+                    print("Counter received: ", self.counter)
                     utime.sleep_ms(_RX_POLL_DELAY)
 
                 # Give initiator time to get into receive mode.
@@ -109,7 +110,7 @@ class boatRF:
                     self.nrf.send(pingMssg.encode('utf-8'))
 
                 except OSError:
-                    print("Cannot send respond!!")
+                    print(OSError)
                     pass
 
                 # Start listening to RF messages again
