@@ -72,6 +72,7 @@ class boatRF:
                     self.nrf.send(pingMssg.encode('utf-8'))
                     
                 except OSError:
+                    print("Cannot send respond!!")
                     pass
                 
                 # Start listening to RF messages again
