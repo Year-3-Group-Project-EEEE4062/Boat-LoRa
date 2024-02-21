@@ -45,6 +45,7 @@ class boatLoRa:
         
     def testCallback(self, payload):
         self.counter = self.counter + 1
+        print("******************************************")
         print("From:", payload.header_from)
         print("Message No.",self.counter)
         print("Received:", self.__extractData(payload.message))
