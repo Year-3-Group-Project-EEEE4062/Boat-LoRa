@@ -1,9 +1,9 @@
 from rfReceiver import boatRF
-import utime
 from machine import Pin
+from loraReceiver import boatLoRa
 
 # Create instance of RF class
-rf = boatRF()
+# rf = boatRF()
+loraModule = boatLoRa()
 
-# Initiate rf testing
-rf.nrfReceiverTest()
+loraModule.loraReceiverTest()

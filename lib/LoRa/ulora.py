@@ -283,7 +283,7 @@ class LoRa(object):
         return False
 
     def send_ack(self, header_to, header_id):
-        self.send(b'!', header_to, header_id, FLAGS_ACK)
+        self.send(b'?', header_to, header_id, FLAGS_ACK)
         self.wait_packet_sent()
 
     def _spi_write(self, register, payload):
@@ -293,6 +293,12 @@ class LoRa(object):
             payload = [p for p in payload]
         elif type(payload) == str:
             payload = [ord(s) for s in payload]
+
+        # User added code
+        elif type(payload) == bytearray:
+            payload = [payload]
+        ##
+
         self.cs.value(0)
         self.spi.write(bytearray([register | 0x80] + payload))
         self.cs.value(1)
@@ -346,8 +352,16 @@ class LoRa(object):
                 header_from = packet[1]
                 header_id = packet[2]
                 header_flags = packet[3]
-                message = bytes(packet[4:]) if packet_len > 4 else b''
+                bytearrayOrNot = packet[4]
 
+                # user addded code
+                if(bytearrayOrNot == 1):
+                    message = bytearray(packet[5:])
+                else:
+                    message = bytes(packet[5:]) if packet_len > 4 else b''
+
+                ##
+                    
                 if (self._this_address != header_to) and ((header_to != BROADCAST_ADDRESS) or (self._receive_all is False)):
                     return
 
