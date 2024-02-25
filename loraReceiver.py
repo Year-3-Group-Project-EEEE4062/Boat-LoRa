@@ -8,10 +8,10 @@ class boatLoRa:
         self.counter = 0
 
         # Lora Parameters
-        RFM95_RST = 3
-        RFM95_SPIBUS = SPIConfig.rp2_0
-        RFM95_CS = 5
-        RFM95_INT = 2
+        RFM95_RST = 17 # RST pin
+        RFM95_SPIBUS = SPIConfig.rp2_00
+        RFM95_CS = 1 # NSS pin 
+        RFM95_INT = 16 #DIO0 pin
         RF95_FREQ = 433.0
         RF95_POW = 20
         self.CLIENT_ADDRESS = 253
