@@ -19,6 +19,10 @@ class boatLoRa_TX:
                      reset_pin=RFM95_RST, freq=RF95_FREQ, tx_power=RF95_POW, 
                      acks=True)
 
+    def loraTX(self, data):
+        ack = self.lora.send_to_wait(data, self.SERVER_ADDRESS)
+        print(ack)
+
     def __doubleTest(self):
         # Can only send a maximum of 4 doubles per transmission
         dataToBeSent = [2.9438889,101.8735556]
@@ -60,48 +64,14 @@ class boatLoRa_RX:
         self.SERVER_ADDRESS = 189
 
         # initialise radio
-        self.lora = LoRa(RFM95_SPIBUS, RFM95_INT, self.SERVER_ADDRESS, RFM95_CS, reset_pin=RFM95_RST, freq=RF95_FREQ, tx_power=RF95_POW, acks=True)
-
-    def __extractData(self, buf):
-        double_identifier = 0x01
-        integer_identifier = 0x02
-
-        mssgStartingIndex = 5
-        intBufferSize = 4
-        doubleBufferSize = 8
-
-        identifier = buf[0]
-        dataLength = struct.unpack('i', buf[1:mssgStartingIndex])[0]
-
-        print(dataLength)
-        if identifier == double_identifier:
-            double_value = struct.unpack('d'* dataLength, buf[mssgStartingIndex:mssgStartingIndex+(doubleBufferSize*dataLength)])
-            return double_value
-
-        elif identifier == integer_identifier:
-            integer_value = struct.unpack('i'* dataLength, buf[mssgStartingIndex:mssgStartingIndex+(intBufferSize*dataLength)])
-            return integer_value
-
-        else:
-            raise ValueError("Unknown identifier")
-        
-    def testCallback(self, payload):
-        self.counter = self.counter + 1
-        print("******************************************")
-        print("From:", payload.header_from)
-        print("Message No.",self.counter)
-        print("Received:", self.__extractData(payload.message))
-        print("RSSI: {}; SNR: {}".format(payload.rssi, payload.snr))
-        pass
-
-    def loraReceiverTest(self):
+        self.lora = LoRa(RFM95_SPIBUS, RFM95_INT, self.SERVER_ADDRESS, RFM95_CS, 
+                        reset_pin=RFM95_RST, freq=RF95_FREQ, tx_power=RF95_POW, 
+                        acks=True)
+    
+    def loraRX(self, receivedLoRa):
         # set callback (overwriting exisiting callback)
-        self.lora.on_recv = self.testCallback
+        self.lora.on_recv = receivedLoRa
 
         # set to listen continuously
         self.lora.set_mode_rx()
-
-        # loop and wait for data
-        while True:
-            utime.sleep_ms(10)
 

@@ -27,11 +27,11 @@ rxUUID = '661649d4-ba56-4d24-906d-cfb531c50d71'
 _UART_UUID = bluetooth.UUID(serviceUUID)
 _UART_TX = (
     bluetooth.UUID(txUUID),
-    _FLAG_READ | _FLAG_NOTIFY | _FLAG_WRITE ,
+    _FLAG_READ | _FLAG_NOTIFY,
 )
 _UART_RX = (
     bluetooth.UUID(rxUUID),
-    _FLAG_WRITE_NO_RESPONSE | _FLAG_WRITE,
+    _FLAG_WRITE,
 )
 _UART_SERVICE = (
     _UART_UUID,
@@ -42,7 +42,7 @@ _UART_SERVICE = (
 #  def gatts_set_buffer
 
 class boatBLE:
-    def __init__(self, connectedCallback, disconnectCallback, receiveCallback, name="BoatBoat"):
+    def __init__(self, connectedCallback, disconnectCallback, receiveCallback, name="PicoW_1"):
         # Create a Bluetooth Low Energy (BLE) object
         self._ble = bluetooth.BLE()
         self._ble.active(True)
@@ -108,6 +108,5 @@ class boatBLE:
         return len(self._connections) > 0
 
     def _advertise(self, interval_us=500000):
-        print("Starting advertising")
         self._ble.gap_advertise(interval_us, adv_data=self._payload)
         
