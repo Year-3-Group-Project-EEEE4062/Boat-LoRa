@@ -62,12 +62,8 @@ class ModemConfig():
 
 class SPIConfig():
     # spi pin defs for various boards (channel, sck, mosi, miso)
-    rp2_00 = (0, 2, 3, 0)
-    rp2_0 = (0, 6, 7, 4)
-    rp2_1 = (1, 10, 11, 8)
-    esp8286_1 = (1, 14, 13, 12)
-    esp32_1 = (1, 14, 13, 12)
-    esp32_2 = (2, 18, 23, 19)
+    tx = (0, 2, 3, 0)
+    rx = (0, 6, 7, 4)
 
 class LoRa(object):
     def __init__(self, spi_channel, interrupt, this_address, cs_pin, reset_pin=None, freq=868.0, tx_power=14,
@@ -243,18 +239,25 @@ class LoRa(object):
         self.set_mode_idle()
         self.wait_cad()
 
-        header = [header_to, self._this_address, header_id, header_flags]
         if type(data) == int:
             data = [data]
+            bytearrayOrNot = 0
         elif type(data) == bytes:
             data = [p for p in data]
+            bytearrayOrNot = 0
         elif type(data) == str:
             data = [ord(s) for s in data]
+            bytearrayOrNot = 0
+        elif type(data) == bytearray:
+            data = list(data)
+            bytearrayOrNot = 1
 
         if self.crypto:
             data = [b for b in self._encrypt(bytes(data))]
 
+        header = [header_to, self._this_address, header_id, header_flags, bytearrayOrNot]
         payload = header + data
+
         self._spi_write(REG_0D_FIFO_ADDR_PTR, 0)
         self._spi_write(REG_00_FIFO, payload)
         self._spi_write(REG_22_PAYLOAD_LENGTH, len(payload))

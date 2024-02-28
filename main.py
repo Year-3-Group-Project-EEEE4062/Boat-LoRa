@@ -1,6 +1,6 @@
 from rfReceiver import boatRF
 from machine import Pin
-from loraReceiver import boatLoRa
+import boatLoRa
 
 # Create instance of RF class
 # Test for RF
@@ -8,5 +8,8 @@ from loraReceiver import boatLoRa
 # rf.nrfReceiverTest()
 
 # Test for LoRa
-loraModule = boatLoRa()
-loraModule.loraReceiverTest()
+loraModule_TX = boatLoRa.boatLoRa_TX()
+loraModule_TX.loraSenderTest()
+
+loraModule_RX = boatLoRa.boatLoRa_RX()
+loraModule_RX.loraReceiverTest()
