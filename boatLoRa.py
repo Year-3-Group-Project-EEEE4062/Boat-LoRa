@@ -56,8 +56,8 @@ class boatLoRa_RX:
         RFM95_INT = 16 #DIO0 pin
         RF95_FREQ = 433.0
         RF95_POW = 20
-        self.CLIENT_ADDRESS = 253
-        self.SERVER_ADDRESS = 199
+        self.CLIENT_ADDRESS = 243
+        self.SERVER_ADDRESS = 189
 
         # initialise radio
         self.lora = LoRa(RFM95_SPIBUS, RFM95_INT, self.SERVER_ADDRESS, RFM95_CS, reset_pin=RFM95_RST, freq=RF95_FREQ, tx_power=RF95_POW, acks=True)

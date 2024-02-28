@@ -6,9 +6,6 @@
 # https://github.com/micropython/micropython-lib/tree/master/micropython/bluetooth/aioble
 
 import bluetooth
-import random
-import struct
-import time
 from lib.BLE.ble_advertising import advertising_payload
 
 from micropython import const
@@ -44,7 +41,7 @@ _UART_SERVICE = (
 # Have to use this to change the BLE buffer size
 #  def gatts_set_buffer
 
-class mediumBLE:
+class boatBLE:
     def __init__(self, connectedCallback, disconnectCallback, receiveCallback, name="BoatBoat"):
         # Create a Bluetooth Low Energy (BLE) object
         self._ble = bluetooth.BLE()
