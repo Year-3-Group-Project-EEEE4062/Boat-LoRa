@@ -1,5 +1,6 @@
-from machine import Pin
-from boatBLE import boatBLE
+from machine import Pin, I2C
+import time
+
 import boatLoRa
 
 ##################################################################
@@ -8,65 +9,46 @@ import boatLoRa
 def receivedLoRa(payload):
     print("Received LoRa: ", payload.message)
 
-    # Check if BLE is connected or not
-    if bluetoothLowEnergy.is_connected():
-        # If BLE connected, notify
-        bluetoothLowEnergy.send(payload.message)
-
 ##################################################################
 ##################################################################
-## Callback when data received through BLE
-def receivedBLE(data):
-    print("Received BLE: ", data)
-    # Process the received BLE message
-    print(data)
-
-##################################################################
-## Callback when BLE connected to RPi 4
-def connectedBLE():
-    print("Connected to BoatBoat Brain!!")
-
-    # Turn ON onboard LED
-    # This to indicate to user that BLE is connected
-    led.on()
-
-##################################################################
-## Callback when BLE disconnected from to phone
-def disconnectedBLE():
-    print("Disconnected")
-
-    # Turn OFF onboard LED
-    # This to indicate to user that BLE NOT connected
-    led.off()
-
-def bleTtest():
-    # Infinite loop
-    while True:
-        # check if BLE connected or not
-        if bluetoothLowEnergy.is_connected():
-            pass
+## Callback when data received from RPi 4 (main boat brain)
+def receivedI2C(pin):
+    print("Received data from Brain!!")
 
 ##################################################################
 ##################################################################
 ## Initialization
-bluetoothLowEnergy = boatBLE(connectedBLE, disconnectedBLE, receivedBLE)
-print("BLE Initialized!!")
+# loraModule_TX = boatLoRa.boatLoRa_TX()
+# print("Boat LoRa TX Initialized!!")
+
+loraModule_RX = boatLoRa.boatLoRa_RX()
+print("Boat LoRa RX Initialized!!")
 
 # Setup on board LED to let user know also if BLE connected or not 
 led = Pin("LED", Pin.OUT)
 led.off()
 
+# Setup I2C to exchange data with brain
+sdaPin = Pin(14)
+sclPin = Pin(15)
+i2c=machine.I2C(0,sda=sdaPIN, scl=sclPIN, freq=400000)
+TX_INT = Pin(12, Pin.OUT) # White wire
+RX_INT = Pin(13, Pin.OUT) # Blue wire
+
 ##################################################################
 ## main operation
 
 # Test for LoRa
-# loraModule_TX = boatLoRa.boatLoRa_TX()
-# print("Boat LoRa TX Initialized!!")
 # loraModule_TX.loraSenderTest()
-
-loraModule_RX = boatLoRa.boatLoRa_RX()
-print("Boat LoRa RX Initialized!!")
 loraModule_RX.loraRX(receivedLoRa)
 
-#Test for BLE
-bleTtest()
+# Set up GPIO Interrupt pin upon change in state of this pin
+RX_INT.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=receivedI2C)
+
+time.sleep(10)
+
+while True:
+    TX_INT.toggle()
+    time.sleep(5)
+    print("Toggled!!")
+    pass
