@@ -2,7 +2,7 @@ import utime
 import struct
 from lib.LoRa.ulora import LoRa, ModemConfig, SPIConfig
 
-class boatLoRa_TX:
+class LoRa_TX:
     def __init__(self):
     # Lora Parameters
         RFM95_RST = 19 # RST GPIO Pin
@@ -48,7 +48,7 @@ class boatLoRa_TX:
             print("sent LoRa message No.",counter,"!")
             utime.sleep_ms(500)
 
-class boatLoRa_RX:
+class LoRa_RX:
     def __init__(self):
         # for debugging purposes during testing
         self.counter = 0
@@ -74,4 +74,26 @@ class boatLoRa_RX:
 
         # set to listen continuously
         self.lora.set_mode_rx()
+
+class boatLoRa:
+    def __init__(self):
+        # Timeout to get ack message from boat
+        self.pingTimeout = 0.2
+
+        self.boatLoRa_TX = LoRa_TX()
+        self.boatLoRa_RX = LoRa_RX()
+
+        # Initialize interrupt listener for LoRa
+        # pass callback function to it
+        self.boatLoRa_RX.loraRX(self.rx_cb)
+
+    # LoRa interrupt receiver callback function
+    def rx_cb(self, payload):
+        self.sendMssg('!'.encode())
+
+    # LoRa sender and wait for acknowledgement
+    def sendMssg(self, mssg):
+        # Send data through LoRa
+        self.mediumLoRa_TX.loraTX(mssg)
+
 

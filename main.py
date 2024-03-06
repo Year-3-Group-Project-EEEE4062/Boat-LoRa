@@ -4,9 +4,7 @@ import sys
 import time
 import ubinascii
 
-import boatLoRa
-
-
+from boatLoRa import boatLoRa
 ##################################################################
 ##################################################################
 ## Callback when data received through LoRa
@@ -29,12 +27,6 @@ def receivedFromBrain(pin):
 ##################################################################
 ##################################################################
 ## Initialization
-# loraModule_TX = boatLoRa.boatLoRa_TX()
-# print("Pico W LoRa TX Initialized!!")
-
-loraModule_RX = boatLoRa.boatLoRa_RX()
-print("Pico W LoRa RX Initialized!!")
-
 # Setup on board LED to let user know also if BLE connected or not 
 led = Pin("LED", Pin.OUT)
 led.off()
@@ -43,14 +35,13 @@ led.off()
 TX_INT = Pin(15, Pin.OUT) # White wire
 RX_INT = Pin(14, Pin.IN) # Blue wire
 RX_INT.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=receivedFromBrain)
+
 print("Pico W Serial INT Initialized")
 
 ##################################################################
 ## main operation
-
-# Test for LoRa
-# loraModule_TX.loraSenderTest()
-loraModule_RX.loraRX(receivedLoRa)
+LoRa = boatLoRa()
+print("Boat LoRa initialized!!")
 
 led.on() # Indicate everything initialized
 

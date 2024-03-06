@@ -283,10 +283,7 @@ class LoRa(object):
                             self._last_payload.header_id == self._last_header_id:
 
                         # We got an ACK
-                        print("Message Acknowlegde!!")
                         return True
-        
-        print("Message No Reply!!")
         return False
 
     def send_ack(self, header_to, header_id):
