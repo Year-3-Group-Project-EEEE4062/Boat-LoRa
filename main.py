@@ -1,16 +1,14 @@
 from machine import Pin
-import select
 import sys
-import time
 import ubinascii
 
 from boatLoRa import boatLoRa
 ##################################################################
 ##################################################################
-## Callback when data received through LoRa
-def receivedLoRa(payload):
+## Callback wto send data to brain
+def sendToBrain(mssg):
     # Convert bytearray to base64-encoded string
-    base64_string = ubinascii.b2a_base64(payload.message).decode('utf-8').strip()
+    base64_string = ubinascii.b2a_base64(mssg).decode('utf-8').strip()
 
     # Convert bytearray to byte strings
     sys.stdout.write(base64_string+'\n')

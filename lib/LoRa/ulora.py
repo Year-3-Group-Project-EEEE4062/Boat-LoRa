@@ -235,9 +235,9 @@ class LoRa(object):
             self._mode = MODE_STDBY
 
     def send(self, data, header_to, header_id=0, header_flags=0):
-        self.wait_packet_sent()
+        # self.wait_packet_sent()
         self.set_mode_idle()
-        self.wait_cad()
+        # self.wait_cad()
 
         if type(data) == int:
             data = [data]
@@ -265,25 +265,25 @@ class LoRa(object):
         self.set_mode_tx()
         return True
 
-    def send_to_wait(self, data, header_to, header_flags=0, retries=3):
+    def send_to_wait(self, data, header_to, header_flags=0, retries=0):
         self._last_header_id += 1
 
         for _ in range(retries + 1):
             self.send(data, header_to, header_id=self._last_header_id, header_flags=header_flags)
-            self.set_mode_rx()
+            # self.set_mode_rx()
 
-            if header_to == BROADCAST_ADDRESS:  # Don't wait for acks from a broadcast message
-                return True
+            # if header_to == BROADCAST_ADDRESS:  # Don't wait for acks from a broadcast message
+            #     return True
 
-            start = time.time()
-            while time.time() - start < self.retry_timeout + (self.retry_timeout * (getrandbits(16) / (2**16 - 1))):
-                if self._last_payload:
-                    if self._last_payload.header_to == self._this_address and \
-                            self._last_payload.header_flags & FLAGS_ACK and \
-                            self._last_payload.header_id == self._last_header_id:
+            # start = time.time()
+            # while time.time() - start < self.retry_timeout + (self.retry_timeout * (getrandbits(16) / (2**16 - 1))):
+            #     if self._last_payload:
+            #         if self._last_payload.header_to == self._this_address and \
+            #                 self._last_payload.header_flags & FLAGS_ACK and \
+            #                 self._last_payload.header_id == self._last_header_id:
 
-                        # We got an ACK
-                        return True
+            #             # We got an ACK
+            #             return True
         return False
 
     def send_ack(self, header_to, header_id):
