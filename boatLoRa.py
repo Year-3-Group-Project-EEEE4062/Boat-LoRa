@@ -48,7 +48,10 @@ class LoRa_RX:
         self.lora.set_mode_rx()
 
 class boatLoRa:
-    def __init__(self):
+    def __init__(self, brainTX_cb):
+        # Callback when wanting to send messages to the brain
+        self.brainTX_cb = brainTX_cb
+
         # Timeout to get ack message from boat
         self.pingTimeout = 0.2
 
@@ -62,6 +65,7 @@ class boatLoRa:
     # LoRa interrupt receiver callback function
     def rx_cb(self, payload):
         self.sendMssg('!'.encode())
+        self.brainTX_cb(payload.message)
 
     # LoRa sender and wait for acknowledgement
     def sendMssg(self, mssg):

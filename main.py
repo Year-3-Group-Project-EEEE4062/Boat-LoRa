@@ -38,7 +38,7 @@ print("Pico W Serial INT Initialized")
 
 ##################################################################
 ## main operation
-LoRa = boatLoRa()
+LoRa = boatLoRa(sendToBrain)
 print("Boat LoRa initialized!!")
 
 led.on() # Indicate everything initialized
