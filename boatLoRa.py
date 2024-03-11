@@ -65,7 +65,7 @@ class boatLoRa:
     # LoRa interrupt receiver callback function
     def rx_cb(self, payload):
         if(payload.message[0]==0x21):
-            print("Test message from medium!!")
+
             self.sendMssg('!'.encode())
         else:
             self.sendMssg('!'.encode())
