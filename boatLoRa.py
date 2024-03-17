@@ -51,10 +51,7 @@ class boatLoRa:
     def __init__(self, brainTX_cb):
         # Callback when wanting to send messages to the brain
         self.brainTX_cb = brainTX_cb
-
-        # Timeout to get ack message from boat
-        self.pingTimeout = 0.2
-
+        
         self.boatLoRa_TX = LoRa_TX()
         self.boatLoRa_RX = LoRa_RX()
 

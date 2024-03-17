@@ -20,7 +20,12 @@ def sendToBrain(mssg):
 ##################################################################
 ## Callback when data received from RPi 4 (main boat brain)
 def receivedFromBrain(pin):
-    print("Received data from Brain!!")
+    # Read the data from stdin (read data coming from PC)
+    base64_str = sys.stdin.readline().strip()
+
+    reply = bytearray(ubinascii.a2b_base64(base64_str))
+
+    LoRa.sendMssg(reply)
 
 ##################################################################
 ##################################################################
