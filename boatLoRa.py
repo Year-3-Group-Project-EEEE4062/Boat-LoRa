@@ -62,10 +62,8 @@ class boatLoRa:
     # LoRa interrupt receiver callback function
     def rx_cb(self, payload):
         if(payload.message[0]==0x21):
-
             self.sendMssg('!'.encode())
         else:
-            self.sendMssg('!'.encode())
             self.brainTX_cb(payload.message)
 
     # LoRa sender and wait for acknowledgement
