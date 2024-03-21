@@ -1,6 +1,8 @@
-from machine import Pin
+from machine import Pin, UART
 import sys
 import ubinascii
+
+import select
 
 from boatLoRa import boatLoRa
 ##################################################################
@@ -14,18 +16,8 @@ def sendToBrain(mssg):
     sys.stdout.write(base64_string+'\n')
 
     # let the RPi4 know new data
-    TX_INT.toggle()
-
-##################################################################
-##################################################################
-## Callback when data received from RPi 4 (main boat brain)
-def receivedFromBrain(pin):
-    # Read the data from stdin (read data coming from PC)
-    base64_str = sys.stdin.readline().strip()
-
-    reply = bytearray(ubinascii.a2b_base64(base64_str))
-
-    LoRa.sendMssg(reply)
+    TX_INT.on()
+    TX_INT.off()
 
 ##################################################################
 ##################################################################
@@ -36,20 +28,26 @@ led.off()
 
 # Set up GPIO Interrupt pin upon change in state of this pin
 TX_INT = Pin(15, Pin.OUT) # White wire
-RX_INT = Pin(14, Pin.IN) # Blue wire
-RX_INT.irq(trigger=Pin.IRQ_RISING | Pin.IRQ_FALLING, handler=receivedFromBrain)
+TX_INT.off()
 
-print("Pico W Serial INT Initialized")
+# Set up the poll object
+poll_obj = select.poll()
+poll_obj.register(sys.stdin, select.POLLIN)
 
 ##################################################################
 ## main operation
 LoRa = boatLoRa(sendToBrain)
-print("Boat LoRa initialized!!")
 
 led.on() # Indicate everything initialized
 
 try:
     while True:
-        pass
+        # Wait for input on stdin
+        poll_results = poll_obj.poll(1) # the '1' is how long it will wait for message before looping again (in microseconds)
+        if poll_results:
+            base64_str = sys.stdin.readline().strip()
+            reply = bytearray(ubinascii.a2b_base64(base64_str))
+            LoRa.sendMssg(reply)
+
 except KeyboardInterrupt:
     pass
