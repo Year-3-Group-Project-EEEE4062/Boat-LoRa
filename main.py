@@ -36,7 +36,10 @@ poll_obj.register(sys.stdin, select.POLLIN)
 
 ##################################################################
 ## main operation
-LoRa = boatLoRa(sendToBrain)
+try:
+    LoRa = boatLoRa(sendToBrain)
+except:
+    print("LoRa init error!")
 
 led.on() # Indicate everything initialized
 
@@ -49,5 +52,5 @@ try:
             reply = bytearray(ubinascii.a2b_base64(base64_str))
             LoRa.sendMssg(reply)
 
-except KeyboardInterrupt:
-    pass
+except Exception as err:
+    print(err)
