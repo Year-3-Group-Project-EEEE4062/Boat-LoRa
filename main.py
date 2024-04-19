@@ -34,9 +34,9 @@ try:
         # Wait for input on stdin
         poll_results = poll_obj.poll(1) # the '1' is how long it will wait for message before looping again (in microseconds)
         if poll_results:
-            base64_str = sys.stdin.readline().strip()
-            reply = bytearray(ubinascii.a2b_base64(base64_str))
-            LoRa.sendMssg(reply)
+            brainMssg = sys.stdin.readline().strip()
+            # reply = bytearray(ubinascii.a2b_base64(base64_str))
+            LoRa.sendMssg(brainMssg)
 
 except Exception as err:
     print(err)
