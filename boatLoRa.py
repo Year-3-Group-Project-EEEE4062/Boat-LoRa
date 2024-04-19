@@ -1,4 +1,5 @@
 from lib.LoRa.ulora import LoRa, ModemConfig, SPIConfig
+import sys
 
 class LoRa_TX:
     def __init__(self):
@@ -64,7 +65,8 @@ class boatLoRa:
         if(payload.message[0]==0x21):
             self.sendMssg('!'.encode())
         else:
-            self.brainTX_cb(payload.message)
+            sys.stdout.buffer.write(payload.message+'\n')
+            self.sendMssg('!'.encode())
 
     # LoRa sender and wait for acknowledgement
     def sendMssg(self, mssg):
