@@ -1,24 +1,8 @@
 from machine import Pin, UART
 import sys
-import ubinascii
-
 import select
 
 from boatLoRa import boatLoRa
-##################################################################
-##################################################################
-## Callback wto send data to brain
-def sendToBrain(mssg):
-    # Convert bytearray to base64-encoded string
-    base64_string = ubinascii.b2a_base64(mssg).decode('utf-8').strip()
-
-    # Convert bytearray to byte strings
-    sys.stdout.write(base64_string+'\n')
-
-    # let the RPi4 know new data
-    TX_INT.on()
-    TX_INT.off()
-
 ##################################################################
 ##################################################################
 ## Initialization
@@ -36,10 +20,12 @@ poll_obj.register(sys.stdin, select.POLLIN)
 
 ##################################################################
 ## main operation
-try:
-    LoRa = boatLoRa(sendToBrain)
-except:
-    print("LoRa init error!")
+while True:
+    try:
+        LoRa = boatLoRa()
+        break
+    except:
+        print("LoRa init error!")
 
 led.on() # Indicate everything initialized
 
