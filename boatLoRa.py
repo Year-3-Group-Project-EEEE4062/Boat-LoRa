@@ -62,7 +62,7 @@ class boatLoRa:
         if(payload.message[0]==0x21):
             self.sendMssg('!'.encode())
         else:
-            sys.stdout.buffer.write(payload.message+'\n')
+            sys.stdout.buffer.write(payload.message+b'\n')
             self.sendMssg('!'.encode())
 
     # LoRa sender and wait for acknowledgement
