@@ -8,9 +8,9 @@ def main():
     led = Pin("LED", Pin.OUT)
     led.off()
 
-    # Set up GPIO Interrupt pin upon change in state of this pin
-    TX_INT = Pin(15, Pin.OUT) # White wire
-    TX_INT.off()
+    # # Set up GPIO Interrupt pin upon change in state of this pin
+    # TX_INT = Pin(15, Pin.OUT) # White wire
+    # TX_INT.off()
 
     # Set up the poll object
     poll_obj = select.poll()
@@ -39,8 +39,5 @@ if __name__=="__main__":
     try:
         main()
     except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        filename = exc_tb.tb_frame.f_code.co_filename
-        line_number = exc_tb.tb_lineno
-        print(f"Exception type: {exc_type.__name__}, File: {filename}, Line: {line_number}")
+        print(e)
 
