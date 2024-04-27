@@ -1,5 +1,6 @@
 from lib.LoRa.ulora import LoRa, ModemConfig, SPIConfig
 import sys
+import ubinascii
 
 class LoRa_TX:
     def __init__(self):
@@ -62,8 +63,9 @@ class boatLoRa:
         if(payload.message[0]==0x21):
             self.sendMssg('!'.encode())
         else:
-            sys.stdout.buffer.write(payload.message+b'\n')
             self.sendMssg('!'.encode())
+            mssgTO = ubinascii.b2a_base64(payload.message).decode('utf-8').strip()
+            print(mssgTO)
 
     # LoRa sender and wait for acknowledgement
     def sendMssg(self, mssg):

@@ -1,6 +1,7 @@
 from machine import Pin, UART
 import sys
 import select
+import ubinascii
 from boatLoRa import boatLoRa
 
 def main():
@@ -32,8 +33,12 @@ def main():
         poll_results = poll_obj.poll(1) # the '1' is how long it will wait for message before looping again (in microseconds)
         
         if poll_results:
-            brainMssg = sys.stdin.readline().strip()
-            LoRa.sendMssg(brainMssg)
+            try:
+                base64_str = sys.stdin.readline().strip()
+                reply = bytearray(ubinascii.a2b_base64(base64_str))
+                LoRa.sendMssg(reply)
+            except:
+                print("Cannot!!")
 
 if __name__=="__main__":
     try:
