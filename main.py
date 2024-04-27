@@ -9,10 +9,6 @@ def main():
     led = Pin("LED", Pin.OUT)
     led.off()
 
-    # # Set up GPIO Interrupt pin upon change in state of this pin
-    # TX_INT = Pin(15, Pin.OUT) # White wire
-    # TX_INT.off()
-
     # Set up the poll object
     poll_obj = select.poll()
     poll_obj.register(sys.stdin, select.POLLIN)

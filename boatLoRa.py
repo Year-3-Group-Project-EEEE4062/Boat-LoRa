@@ -2,6 +2,14 @@ from lib.LoRa.ulora import LoRa, ModemConfig, SPIConfig
 import sys
 import ubinascii
 
+
+# Define function to append data to a CSV file
+def append_to_csv(mssg, rssi, snr):
+    # Open the file in append mode
+    with open("LoRaLog.csv", 'a') as file:
+        # Append a new row to the CSV file with the given data
+        file.write(f'{mssg},{rssi},{snr}\n')
+
 class LoRa_TX:
     def __init__(self):
     # Lora Parameters
@@ -66,6 +74,7 @@ class boatLoRa:
             self.sendMssg('!'.encode())
             mssgTO = ubinascii.b2a_base64(payload.message).decode('utf-8').strip()
             print(mssgTO)
+        append_to_csv(payload.message,payload.rssi,payload.snr)
 
     # LoRa sender and wait for acknowledgement
     def sendMssg(self, mssg):
