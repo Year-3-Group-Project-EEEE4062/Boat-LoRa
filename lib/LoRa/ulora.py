@@ -67,7 +67,7 @@ class SPIConfig():
 
 class LoRa(object):
     def __init__(self, spi_channel, interrupt, this_address, cs_pin, reset_pin=None, freq=868.0, tx_power=14,
-                 modem_config=ModemConfig.Bw125Cr45Sf128, receive_all=False, acks=False, crypto=None):
+                 modem_config=ModemConfig.Bw500Cr45Sf128, receive_all=False, acks=False, crypto=None):
         """
         Lora(channel, interrupt, this_address, cs_pin, reset_pin=None, freq=868.0, tx_power=14,
                  modem_config=ModemConfig.Bw125Cr45Sf128, receive_all=False, acks=False, crypto=None)
